@@ -1,0 +1,18 @@
+services:
+    platform_docker-app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: palalon-app
+        ports:
+            - "8000:80"
+        environment:
+            DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverVersion=8.0.32&charset=utf8mb4"
+            TMPDIR: /app/var/tmp
+        depends_on:
+            - platform_docker-db
+        networks:
+            - platform-network
+
+networks:
+    platform-network:
