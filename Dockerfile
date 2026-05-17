@@ -24,8 +24,11 @@ WORKDIR /app
 COPY composer.json composer.lock* ./
 COPY . .
 
-# OPTIMIZED: Added --no-scripts to prevent Composer from running local binary triggers during image generation
+# 1. Install dependencies without running unpredictable runtime hooks
 RUN APP_ENV=prod composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# 2. FIX: Re-generate the missing Symfony runtime autoload files safely
+RUN composer dump-autoload --optimize --no-scripts
 
 # --- COPIED NGINX CONFIGURATIONS (As per your project requirements) ---
 COPY nginx-main.conf /etc/nginx/nginx.conf
@@ -35,9 +38,6 @@ COPY nginx.conf /etc/nginx/conf.d/symfony.conf
 # Copy and set up entrypoint script
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-# Set initial secure permissions for application paths
-RUN chown -R www-data:www-data /app
 
 # Expose HTTP port 80 for production web traffic instead of 9000
 EXPOSE 80

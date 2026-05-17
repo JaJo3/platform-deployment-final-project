@@ -29,6 +29,11 @@ echo "Starting Nginx..."
 nginx -g "daemon off;" &
 NGINX_PID=$!
 
-# Wait for either process to exit
-wait -n
-exit $?
+# FIXED: Replaced "wait -n" with a standard POSIX process monitoring loop
+echo "Containers are up and monitoring running services..."
+while kill -0 "$PHP_PID" 2>/dev/null && kill -0 "$NGINX_PID" 2>/dev/null; do
+    sleep 2
+done
+
+echo "One of the primary processes (Nginx or PHP-FPM) has crashed. Shutting down container."
+exit 1
