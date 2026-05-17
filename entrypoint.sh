@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # Ensure absolute paths for runtime directories exist
@@ -9,9 +9,9 @@ mkdir -p /app/var/cache /app/var/log /app/var/tmp
 chown -R www-data:www-data /app/var
 chmod -R 775 /app/var
 
-# Clear cache AS the www-data user so root doesn't hijack ownership
+# OPTIMIZED: Switched shell argument execution to /bin/sh
 echo "Clearing cache..."
-su -s /bin/bash -c "php bin/console cache:clear --env=prod --no-warmup" www-data
+su -s /bin/sh -c "php bin/console cache:clear --env=prod --no-warmup" www-data
 sleep 1
 
 # Run database migrations automatically during deployment
