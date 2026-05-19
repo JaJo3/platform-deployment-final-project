@@ -32,12 +32,11 @@ phpunit.xml
 phpunit.dist.xml
 .phpunit.cache/
 
-# Build and cache
+# Build and cache (FIXED: Block the entire folders cleanly)
 dist/
 build/
 .cache/
-var/cache/*
-var/log/*
+var/
 
 # CI/CD
 .github/
@@ -46,6 +45,7 @@ var/log/*
 Jenkinsfile
 
 # Docker compose files (development only)
+docker-compose.yaml
 docker-compose.override.yaml
 compose-disable.yaml
 compose.override-disable.yaml
