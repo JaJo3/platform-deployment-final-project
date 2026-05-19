@@ -9,40 +9,8 @@ services:
         environment:
             DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverVersion=8.0.32&charset=utf8mb4"
             TMPDIR: /app/var/tmp
-        depends_on:
-            - platform_docker-db
         networks:
             - platform-network
-    platform_docker-db:
-        image: mysql:8.0
-        container_name: palalon-db
-        environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-        ports:
-            - "3307:3306"
-        volumes:
-            - platform-db-data:/var/lib/mysql
-        networks:
-            - platform-network
-
-    platform_docker-phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        container_name: palalon-phpmyadmin
-        environment:
-            PMA_HOST: platform_docker-db
-            PMA_USER: ${MYSQL_USER}
-            PMA_PASSWORD: ${MYSQL_PASSWORD}
-        ports:
-            - "8080:80"
-        depends_on:
-            - platform_docker-db
-        networks:
-            - platform-network
-
-volumes:
-    platform-db-data:
+    :
 networks:
     platform-network:
