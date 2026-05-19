@@ -20,15 +20,18 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+# Explicitly ensure production mode defaults are set for Composer hooks
+ENV APP_ENV=prod
+
 # Copy composer files and application code
 COPY composer.json composer.lock* ./
 COPY . .
 
-# 1. Install dependencies without running unpredictable runtime hooks
-RUN APP_ENV=prod composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+# 1. Install dependencies without running unpredictable hooks
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# 2. FIX: Re-generate the missing Symfony runtime autoload files safely
-RUN composer dump-autoload --optimize --no-scripts
+# 2. FIXED: Explicitly generate standard classmaps for production builds to avoid missing runtime wrapper layers
+RUN composer dump-autoload --no-dev --classmap-authoritative
 
 # --- COPIED NGINX CONFIGURATIONS (As per your project requirements) ---
 COPY nginx-main.conf /etc/nginx/nginx.conf

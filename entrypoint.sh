@@ -5,18 +5,21 @@ set -e
 echo "Fixing directory permissions..."
 mkdir -p /app/var/cache /app/var/log /app/var/tmp
 
+# Explicitly export execution variables to the container subshells
+export APP_ENV=prod
+
 # Force recursive ownership of the runtime tracks to www-data
 chown -R www-data:www-data /app/var
 chmod -R 775 /app/var
 
 # OPTIMIZED: Switched shell argument execution to /bin/sh
 echo "Clearing cache..."
-su -s /bin/sh -c "php bin/console cache:clear --env=prod --no-warmup" www-data
+su -s /bin/sh -c "php /app/bin/console cache:clear --env=prod --no-warmup" www-data
 sleep 1
 
 # Run database migrations automatically during deployment
 echo "Running migrations..."
-php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+php /app/bin/console doctrine:migrations:migrate --no-interaction --env=prod
 sleep 1
 
 # Start PHP-FPM in the foreground
