@@ -27,13 +27,13 @@ ENV AUTO_DUMP_AUTOLOAD=1
 # Copy composer structural definitions first to cache layer builds
 COPY composer.json composer.lock* ./
 
-# Install dependencies allowing runtime generation hooks to execute cleanly
-RUN composer install --no-dev --no-interaction --optimize-autoloader
+# --- FIXED LINE: Added --no-scripts to prevent bin/console execution loops ---
+RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
 
-# Copy the rest of the application files over the dependency maps
+# Copy the rest of the application files over the dependency maps (This brings in bin/)
 COPY . .
 
-# Force dump an authoritative production classmap
+# Force dump an authoritative production classmap and execute post-build script definitions
 RUN composer dump-autoload --no-dev --classmap-authoritative
 
 # --- COPIED NGINX CONFIGURATIONS ---
