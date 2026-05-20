@@ -25,6 +25,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+# Allow Composer plugins (e.g. symfony/runtime) to run as root during build
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Ensure production mode defaults are declared globally
 ENV APP_ENV=prod
 ENV AUTO_DUMP_AUTOLOAD=1
