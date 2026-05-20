@@ -30,9 +30,10 @@ phpunit.xml
 .phpunit.cache/
 
 # Core Cache Directories (Excluding the entire folder cleanly)
-var/cache/
-var/log/
-var/tmp/
+var/*
+!var/runtime/
+dist/
+build/
 .cache/
 
 # Docker overrides
