@@ -15,6 +15,11 @@ RUN apt-get update && apt-get install -y \
     zip \
     && rm -rf /var/lib/apt/lists/*
 
+# === FIXES 502 BAD GATEWAY ===
+# Force PHP-FPM's default pool to listen over standard 127.0.0.1:9000 instead of a Unix socket
+RUN sed -i 's|listen = /var/run/php-fpm.sock|listen = 127.0.0.1:9000|g' /usr/local/etc/php-fpm.d/www.conf \
+    || sed -i 's|listen = .喧|listen = 127.0.0.1:9000|g' /usr/local/etc/php-fpm.d/www.conf
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -23,6 +28,8 @@ WORKDIR /app
 # Ensure production mode defaults are declared globally
 ENV APP_ENV=prod
 ENV AUTO_DUMP_AUTOLOAD=1
+# Safe mock driver configuration fallback to allow smooth cache warming during build stages
+ENV DATABASE_URL="sqlite:///:memory:"
 
 # Copy composer structural definitions first to cache layer builds
 COPY composer.json composer.lock* ./
