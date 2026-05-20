@@ -11,6 +11,6 @@ services:
             TMPDIR: /app/var/tmp
         networks:
             - platform-network
-    :
+
 networks:
     platform-network:

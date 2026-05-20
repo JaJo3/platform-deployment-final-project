@@ -1,42 +1,41 @@
 #!/bin/sh
 set -e
 
+echo "System Architecture Initializing..."
+
 # Ensure absolute paths for runtime directories exist
-echo "Fixing directory permissions..."
 mkdir -p /app/var/cache /app/var/log /app/var/tmp
 
-# Explicitly export execution variables to the container subshells
+# Explicitly export execution variables to subshells
 export APP_ENV=prod
 
-# Force recursive ownership of the runtime tracks to www-data
+# Force recursive ownership of runtime directories to the web server user
 chown -R www-data:www-data /app/var
 chmod -R 775 /app/var
 
-# OPTIMIZED: Switched shell argument execution to /bin/sh
-echo "Clearing cache..."
+echo "Warmbooting Symfony Cache Context..."
 su -s /bin/sh -c "php /app/bin/console cache:clear --env=prod --no-warmup" www-data
 sleep 1
 
 # Run database migrations automatically during deployment
-echo "Running migrations..."
-php /app/bin/console doctrine:migrations:migrate --no-interaction --env=prod
+echo "Running Production Database Migrations..."
+php /app/bin/console doctrine:migrations:migrate --no-interaction --env=prod --allow-no-migration
 sleep 1
 
 # Start PHP-FPM in the foreground
-echo "Starting PHP-FPM..."
+echo "Starting PHP-FPM Service Engine..."
 php-fpm -F &
 PHP_PID=$!
 
 # Start Nginx in the foreground
-echo "Starting Nginx..."
+echo "Starting Nginx Reverse Proxy..."
 nginx -g "daemon off;" &
 NGINX_PID=$!
 
-# FIXED: Replaced "wait -n" with a standard POSIX process monitoring loop
-echo "Containers are up and monitoring running services..."
+echo "Containers are active. Monitoring status tracks..."
 while kill -0 "$PHP_PID" 2>/dev/null && kill -0 "$NGINX_PID" 2>/dev/null; do
     sleep 2
 done
 
-echo "One of the primary processes (Nginx or PHP-FPM) has crashed. Shutting down container."
+echo "Critical process failure detected. Container shutting down."
 exit 1

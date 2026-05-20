@@ -15,29 +15,25 @@
 README.md
 docs/
 *.md
-assets/
-public/build/
 
-# Development files and dependencies
+# Development dependencies (Never copy local dependencies)
 node_modules/
-npm-debug.log
-yarn-error.log
-.env.local
-.env.*.local
 vendor/
 
-# Test files
+# Environment configurations
+.env.local
+.env.*.local
+
+# Test suites
 tests/
 phpunit.xml
-phpunit.dist.xml
 .phpunit.cache/
 
-# Core Cache Directories (CRITICAL)
-var/
-dist/
-build/
+# Core Cache Directories (Excluding the entire folder cleanly)
+var/cache/
+var/log/
+var/tmp/
 .cache/
 
-# Docker configuration overrides
-docker-compose.yaml
+# Docker overrides
 docker-compose.override.yaml
