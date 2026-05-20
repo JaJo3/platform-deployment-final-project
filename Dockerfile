@@ -40,7 +40,10 @@ RUN composer install --no-dev --no-interaction --optimize-autoloader
 # Copy the rest of the application files over the dependency maps (This brings in bin/)
 COPY . .
 
-# Force dump an authoritative production classmap and execute post-build script definitions
+# Run composer post-install scripts to generate bin/console and other runtime files
+RUN composer run-script post-install-cmd --no-dev
+
+# Force dump an authoritative production classmap
 RUN composer dump-autoload --no-dev --classmap-authoritative
 
 # --- COPIED NGINX CONFIGURATIONS ---
