@@ -35,15 +35,21 @@ ENV DATABASE_URL="sqlite:///:memory:"
 COPY composer.json composer.lock* ./
 
 # Install dependencies - this should auto-generate vendor/autoload_runtime.php
-RUN composer install --no-dev --no-interaction --optimize-autoloader && \
-    composer dump-autoload --no-dev --classmap-authoritative
+RUN composer install --no-dev --no-interaction --optimize-autoloader
+
+# Debug: Check what files exist
+RUN echo "=== Checking vendor directory ===" && \
+    ls -la /app/vendor/ | head -20 && \
+    echo "=== Looking for autoload_runtime.php ===" && \
+    find /app/vendor -name "autoload_runtime.php" -o -name "*runtime*" | head -20 && \
+    echo "=== Checking symfony/runtime ===" && \
+    ls -la /app/vendor/symfony/runtime/ 2>/dev/null || echo "symfony/runtime not found"
 
 # Copy the rest of the application files
 COPY . .
 
-# Verify autoload_runtime.php was created (debugging)
-RUN test -f /app/vendor/autoload_runtime.php || \
-    (echo "ERROR: autoload_runtime.php not found!" && exit 1)
+# Dump autoload again
+RUN composer dump-autoload --no-dev --classmap-authoritative
 
 # --- COPIED NGINX CONFIGURATIONS ---
 COPY nginx-main.conf /etc/nginx/nginx.conf
