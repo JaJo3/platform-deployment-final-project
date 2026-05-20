@@ -34,17 +34,16 @@ ENV DATABASE_URL="sqlite:///:memory:"
 # Copy composer structural definitions first to cache layer builds
 COPY composer.json composer.lock* ./
 
-# Install dependencies (allow post-install scripts for symfony/runtime setup)
-RUN composer install --no-dev --no-interaction --optimize-autoloader
+# Install dependencies - this should auto-generate vendor/autoload_runtime.php
+RUN composer install --no-dev --no-interaction --optimize-autoloader && \
+    composer dump-autoload --no-dev --classmap-authoritative
 
-# Copy the rest of the application files over the dependency maps (This brings in bin/)
+# Copy the rest of the application files
 COPY . .
 
-# Run composer post-install scripts to generate bin/console and other runtime files
-RUN composer run-script post-install-cmd --no-dev
-
-# Force dump an authoritative production classmap
-RUN composer dump-autoload --no-dev --classmap-authoritative
+# Verify autoload_runtime.php was created (debugging)
+RUN test -f /app/vendor/autoload_runtime.php || \
+    (echo "ERROR: autoload_runtime.php not found!" && exit 1)
 
 # --- COPIED NGINX CONFIGURATIONS ---
 COPY nginx-main.conf /etc/nginx/nginx.conf
