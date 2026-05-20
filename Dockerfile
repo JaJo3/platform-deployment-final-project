@@ -34,8 +34,8 @@ ENV DATABASE_URL="sqlite:///:memory:"
 # Copy composer structural definitions first to cache layer builds
 COPY composer.json composer.lock* ./
 
-# --- FIXED LINE: Added --no-scripts to prevent bin/console execution loops ---
-RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
+# Install dependencies (allow post-install scripts for symfony/runtime setup)
+RUN composer install --no-dev --no-interaction --optimize-autoloader
 
 # Copy the rest of the application files over the dependency maps (This brings in bin/)
 COPY . .
