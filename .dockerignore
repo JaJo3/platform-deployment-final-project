@@ -10,31 +10,44 @@
 *.swo
 *~
 .DS_Store
+*.sublime-project
+*.sublime-workspace
 
-# Documentation and heavy local assets
+# Documentation
 README.md
 docs/
 *.md
 
-# Development dependencies (Never copy local dependencies)
+# Development files
 node_modules/
-vendor/
-
-# Environment configurations
+npm-debug.log
+yarn-error.log
 .env.local
 .env.*.local
 
-# Test suites
+# Test files
 tests/
 phpunit.xml
+phpunit.dist.xml
 .phpunit.cache/
 
-# Core Cache Directories (Excluding the entire folder cleanly)
-var/*
-!var/runtime/
+# Build and cache
 dist/
 build/
 .cache/
 
-# Docker overrides
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Docker compose files (development only)
 docker-compose.override.yaml
+compose-disable.yaml
+compose.override-disable.yaml
+
+# Misc
+.editorconfig
+.gitpod.yml
+Makefile
